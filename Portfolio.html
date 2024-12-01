@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nipun Golla BBW Portfolio</title>
+    
+    <!-- Prism.js for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 10px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            margin-bottom: 40px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        section h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        code {
+            font-size: 1rem;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #f4f4f9;
+        }
+        body.dark-mode header {
+            background-color: #222;
+        }
+        body.dark-mode footer {
+            background-color: #222;
+        }
+        body.dark-mode section {
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode section:hover {
+            box-shadow: 0 8px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Navigation Menu */
+        nav {
+            text-align: center;
+            margin: 20px 0;
+        }
+        nav button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        nav button:hover {
+            background-color: #555;
+        }
+        .hidden {
+            display: none;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background-color 0.3s, color 0.3s;
+            z-index: 1000; /* Ensures it stays on top */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode-toggle:hover {
+            background-color: #555;
+        }
+        .dark-mode-toggle i {
+            font-family: Arial, sans-serif;
+            font-style: normal;
+        }
+
+        /* Portfolio Section Styling */
+        .projects {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .project-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .project-card h4 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .project-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .project-card a:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Nipun Golla BBW Portfolio</h1>
+</header>
+
+<!-- Dark Mode Toggle Button -->
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">
+    <i id="darkModeIcon">☀️</i>
+</button>
+
+<!-- Navigation Menu -->
+<nav>
+    <button onclick="showSection('hamster-docs')">Hamster Simulator Docs</button>
+    <button onclick="showSection('python-docs')">Python Docs</button>
+    <button onclick="showSection('python-libs-docs')">Python Lib Docs</button>
+<button onclick="location.href='ProjectDocs.html'">Projects</button>
+</nav>
+
+<!-- Portfoli
+<!-- Portfolio Section -->
+<main id="portfolio">
+    <section>
+        <h2>Portfolio</h2>
+        <p>Throughout my studies at BBW, I have developed a range of projects that showcase my skills in programming, problem-solving, and software development. Notably, I’ve worked on the <strong>Hamster Simulator</strong> using <strong>Java</strong>, which taught me valuable lessons in object-oriented programming, control structures, and algorithm design. The project challenged me to think critically about user interaction and automation, while also allowing me to explore concepts such as grid navigation and decision-making logic.</p>
+
+        <p>In addition, I’ve also gained hands-on experience in <strong>Python</strong> development, focusing on data analysis and visualization. Using <strong>Anaconda</strong>, I worked on various projects that involved processing large datasets and presenting them visually with libraries like <strong>Matplotlib</strong>. These projects helped me refine my understanding of data workflows and improve my ability to communicate complex data insights clearly.</p>
+
+        <p>This portfolio includes examples of these projects, highlighting the technical skills I’ve developed and the practical applications of my work. Each project demonstrates my ability to turn theoretical knowledge into functional, real-world solutions.</p>
+
+    </section>
+
+        <!-- Hamster Simulator (Java) Section -->
+    <section id="hamster-docs" class="hidden">
+        <h2>Hamster Simulator Documentation</h2>
+        <p>This documentation provides an overview of how the Hamster Simulator works, including key concepts, classes, and methods.</p>
+    
+        <h3>Key Concepts</h3>
+        <ul>
+            <li>
+                <h4><strong>Hamster Class</strong></h4>
+                <hr>
+                <p>Represents the hamster's position, direction, and movement in the simulation.</p>
+            </li>
+            <li>
+                <h4><strong>Constants</strong></h4>
+                <hr>
+                <p>Includes predefined values such as colors (<code>BLAU</code>, <code>BLUE</code>, <code>RED</code>) and directions (<code>NORD</code>, <code>OST</code>).</p>
+            </li>
+            <li>
+                <h4><strong>Constructors</strong></h4>
+                <hr>
+                <p>Various constructors for initializing the hamster with parameters such as position, direction, and color.</p>
+            </li>
+            <li>
+                <h4><strong>Initialization</strong></h4>
+                <hr>
+                <p>The hamster is initialized using the <code>init()</code> method or constructors, ensuring valid position and direction.</p>
+            </li>
+            <li>
+                <h4><strong>Movement Methods</strong></h4>
+                <hr>
+                <p>Controls hamster's movements, including <code>vor()</code> for moving forward and <code>linksUm()</code> for turning left.</p>
+            </li>
+            <li>
+                <h4><strong>Utility Methods</strong></h4>
+                <hr>
+                <p>Methods like <code>gib()</code>, <code>nimm()</code>, and <code>kornDa()</code> manage the hamster's grain-related actions.</p>
+            </li>
+            <li>
+                <h4><strong>Getter Methods</strong></h4>
+                <hr>
+                <p>Methods like <code>getReihe()</code>, <code>getSpalte()</code>, and <code>getAnzahlKoerner()</code> return the hamster's state, including its position and grain count.</p>
+            </li>
+            <li>
+                <h4><strong>Exceptions</strong></h4>
+                <hr>
+                <p>Methods may throw exceptions like <code>HamsterNichtInitialisiertException</code> or <code>MauerDaException</code> for invalid actions.</p>
+            </li>
+            <li>
+                <h4><strong>Cloning and Comparison</strong></h4>
+                <hr>
+                <p>The hamster can be cloned with <code>clone()</code> and compared for equality with <code>equals()</code>.</p>
+            </li>
+            <li>
+                <h4><strong>Standard Hamster</strong></h4>
+                <hr>
+                <p>The <code>getStandardHamster()</code> method provides the default hamster configuration for the simulation.</p>
+            </li>
+        </ul>
+
+
+        <h3>Sample Code</h3>
+        <pre><code class="language-java">
+// Hamster Simulator Targetting Mechanism Example
+void main() {
+    Hamster hamster = new Hamster(0, 0, Hamster.OST, 0); 
+
+    int targetX = 3;
+    int targetY = 12;
+
+    while (hamster.getReihe() != targetX) {
+        if (hamster.getReihe() < targetX) {
+            faceDirection(hamster, Hamster.SUED);
+        } else {
+            faceDirection(hamster, Hamster.NORD);  
+        }
+
+        if (hamster.vornFrei()) {
+            hamster.vor();
+        }
+    }
+    while (hamster.getSpalte() != targetY) {
+        if (hamster.getSpalte() < targetY) {
+            faceDirection(hamster, Hamster.OST);
+        } else {
+            faceDirection(hamster, Hamster.WEST);  
+        }
+
+        if (hamster.vornFrei()) {
+            hamster.vor();
+        }
+    }
+}
+
+void faceDirection(Hamster hamster, int direction) {
+    while (hamster.getBlickrichtung() != direction) {
+        hamster.linksUm();  
+    }
+}
+        </code></pre>
+    </section>
+
+        <!-- Python Documentation Section -->
+    <section id="python-docs" class="hidden">
+        <h2>Python Documentation</h2>
+        <p>This documentation outlines the key concepts of Python programming, focusing on core features of the language used in various projects.</p>
+    
+        <h3>Key Concepts</h3>
+        <ul>
+            <li>
+                <h4><strong>Data Types</strong></h4>
+                <hr>
+                <p>Python supports a variety of built-in data types, including integers, floats, strings, lists, tuples, sets, and dictionaries. Each type has its own set of operations and uses in programming.</p>
+            </li>
+            <li>
+                <h4><strong>Variables and Constants</strong></h4>
+                <hr>
+                <p>Variables store values in memory, while constants are used to store values that should not be changed throughout the program. Python does not have true constant variables, but naming conventions (e.g., all uppercase) can be used.</p>
+            </li>
+            <li>
+                <h4><strong>Control Flow</strong></h4>
+                <hr>
+                <p>Control flow structures like `if`, `else`, `elif`, `while`, and `for` allow the program to execute code conditionally or repeatedly, enabling the creation of complex logic and loops.</p>
+            </li>
+            <li>
+                <h4><strong>Functions</strong></h4>
+                <hr>
+                <p>Functions are blocks of reusable code that perform a specific task. They are defined using the `def` keyword and can accept parameters and return values.</p>
+            </li>
+            <li>
+                <h4><strong>Classes and Objects</strong></h4>
+                <hr>
+                <p>Python supports object-oriented programming, which allows you to define classes that model real-world entities. Classes can contain methods and attributes, and objects are instances of these classes.</p>
+            </li>
+            <li>
+                <h4><strong>Exceptions and Error Handling</strong></h4>
+                <hr>
+                <p>Python uses a try-except block to handle runtime errors. This allows the program to continue executing even when an error occurs, without crashing.</p>
+            </li>
+            <li>
+                <h4><strong>List Comprehension</strong></h4>
+                <hr>
+                <p>List comprehension provides a concise way to create lists by performing an operation on each item in an existing iterable, allowing for more readable and efficient code.</p>
+            </li>
+            <li>
+                <h4><strong>Iterators and Generators</strong></h4>
+                <hr>
+                <p>Iterators allow you to loop through items in a collection, while generators are a type of iterator that yield items one at a time, which is memory efficient when working with large data sets.</p>
+            </li>
+            <li>
+                <h4><strong>Modules and Packages</strong></h4>
+                <hr>
+                <p>Modules are individual Python files that contain reusable code, while packages are collections of modules. Python allows you to import and use modules and packages to organize code efficiently.</p>
+            </li>
+            <li>
+                <h4><strong>Lambda Functions</strong></h4>
+                <hr>
+                <p>Lambda functions are anonymous functions defined with the `lambda` keyword. They are useful for simple operations and can be passed as arguments to other functions.</p>
+            </li>
+            <li>
+                <h4><strong>Decorators</strong></h4>
+                <hr>
+                <p>Decorators are functions that modify the behavior of other functions or methods. They are commonly used for logging, access control, or caching results in Python.</p>
+            </li>
+            <li>
+                <h4><strong>File I/O</strong></h4>
+                <hr>
+                <p>Python provides built-in functions for reading from and writing to files. The `open()` function is used to access files, and data can be read or written in various formats like text, binary, and CSV.</p>
+            </li>
+        </ul>
+
+        <h3>Sample Code</h3>
+        <pre><code class="language-python">
+# Data Types
+# Examples of different data types in Python
+integer_example = 42  # Integer
+float_example = 3.14  # Float
+string_example = "Hello, World!"  # String
+list_example = [1, 2, 3, 4]  # List
+tuple_example = (1, 2, 3, 4)  # Tuple
+set_example = {1, 2, 3, 4}  # Set
+dictionary_example = {"key": "value", "another_key": 42}  # Dictionary
+
+# Variables and Constants
+# Variables
+variable = 10
+variable = variable + 5  # Variable reassignment
+
+# Constants (by convention, use uppercase for constants)
+PI = 3.14159
+GRAVITY = 9.8
+
+# Control Flow
+# Conditional statements
+number = 10
+if number > 5:
+    print("Number is greater than 5")
+elif number == 5:
+    print("Number is equal to 5")
+else:
+    print("Number is less than 5")
+
+# Loops
+for i in range(3):
+    print(f"Loop iteration {i}")
+    
+# While loop
+count = 0
+while count < 3:
+    print(f"While loop count: {count}")
+    count += 1
+
+# Functions
+def greet(name):
+    return f"Hello, {name}!"
+
+print(greet("Alice"))
+
+# Classes and Objects
+class Animal:
+    def __init__(self, name, species):
+        self.name = name
+        self.species = species
+
+    def make_sound(self):
+        return f"{self.name} makes a sound."
+
+cat = Animal("Whiskers", "Cat")
+print(cat.make_sound())
+
+# Exceptions and Error Handling
+try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f"Error occurred: {e}")
+finally:
+    print("Execution completed.")
+
+# List Comprehension
+squared_numbers = [x ** 2 for x in range(5)]
+print(squared_numbers)
+
+# Iterators and Generators
+# Iterator example
+my_list = [1, 2, 3]
+my_iter = iter(my_list)
+print(next(my_iter))
+print(next(my_iter))
+
+# Generator example
+def count_up_to(max_value):
+    count = 1
+    while count <= max_value:
+        yield count
+        count += 1
+
+for number in count_up_to(3):
+    print(number)
+
+# Modules and Packages
+import math
+print(math.sqrt(16))
+
+# Lambda Functions
+double = lambda x: x * 2
+print(double(5))
+
+# Decorators
+def decorator(func):
+    def wrapper():
+        print("Before the function call.")
+        func()
+        print("After the function call.")
+    return wrapper
+
+@decorator
+def say_hello():
+    print("Hello!")
+
+say_hello()
+
+# File I/O
+# Writing to a file
+with open("example.txt", "w") as file:
+    file.write("Hello, File!")
+
+# Reading from a file
+with open("example.txt", "r") as file:
+    content = file.read()
+    print(content)
+
+        </code></pre>
+    </section>
+    <!-- Python Libraries Section -->
+    <section id="python-libs-docs" class="hidden">
+        <h2>Python Libraries Documentation</h2>
+        <p>This section outlines the key Python libraries that are frequently used in various data analysis, machine learning, and scientific computing projects.</p>
+    
+        <h3>Key Libraries</h3>
+        <ul>
+            <li>
+                <h4><strong>NumPy</strong></h4>
+                <hr>
+                <p>NumPy is a fundamental library for numerical computing in Python. It provides support for large multi-dimensional arrays and matrices, along with a collection of mathematical functions to operate on these arrays.</p>
+            </li>
+            <li>
+                <h4><strong>Pandas</strong></h4>
+                <hr>
+                <p>Pandas is a powerful library used for data manipulation and analysis. It provides data structures like DataFrames and Series, which allow for efficient handling and analysis of structured data, such as time series and tabular data.</p>
+            </li>
+            <li>
+                <h4><strong>Matplotlib</strong></h4>
+                <hr>
+                <p>Matplotlib is a plotting library used for creating static, animated, and interactive visualizations in Python. It is widely used for generating plots, charts, and graphs for data analysis and visualization.</p>
+            </li>
+            
+        </ul>
+    </section>
+</main>
+
+
+<footer>
+    <p>&copy; 2024 Nipun Golla BBW Portfolio</p>
+</footer>
+
+<!-- Prism.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+<script>
+    // Dark Mode Toggle Functionality
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const icon = document.getElementById('darkModeIcon');
+        if (document.body.classList.contains('dark-mode')) {
+            icon.textContent = '🌙'; // Moon for dark mode
+        } else {
+            icon.textContent = '☀️'; // Sun for light mode
+        }
+    }
+
+    // Navigation Functionality
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('main section').forEach(section => {
+            section.classList.add('hidden');
+        });
+        // Show the selected section
+        document.getElementById(sectionId).classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
