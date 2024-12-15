@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Matrix Designer</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #4a90e2;
+            --highlight-color: #ff6b6b;
+            --led-off: #333;
+            --led-on: #ff6b6b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .container {
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .app-title {
+            text-align: center;
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--accent-color), var(--highlight-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .led {
+            aspect-ratio: 1;
+            background-color: var(--led-off);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .led:hover {
+            transform: scale(1.05);
+        }
+
+        .led.on {
+            background-color: var(--led-on);
+            box-shadow: 
+                0 0 10px var(--led-on), 
+                0 0 20px var(--led-on), 
+                inset 0 0 10px rgba(255,107,107,0.5);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(50,50,93,0.1), 0 3px 6px rgba(0,0,0,0.08);
+        }
+
+        .btn.clear {
+            background-color: #ff6b6b;
+        }
+
+        .export-config {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .export-config label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-container {
+            margin-top: 1rem;
+        }
+
+        #code {
+            width: 100%;
+            min-height: 150px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--text-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .controls, .export-config {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="app-title">LED Matrix Designer</h1>
+        
+        <div class="matrix" id="matrix"></div>
+        
+        <div class="export-config">
+            <label>
+                <input type="checkbox" id="addDelayCheckbox">
+                Add Delay Between LED Toggles
+            </label>
+            <label>
+                Delay (ms): 
+                <input type="number" id="delayInput" value="100" min="0" max="5000">
+            </label>
+            <label>
+                <input type="radio" name="orderType" value="order" checked>
+                Order In Which LED Turned On
+            </label>
+            <label>
+                <input type="radio" name="orderType" value="position">
+                Position on Matrix
+            </label>
+        </div>
+        
+        <div class="controls">
+            <button class="btn clear" onclick="clearAll()">Clear Matrix</button>
+            <button class="btn" onclick="runSimulation()">Run Simulation</button>
+            <button class="btn" onclick="downloadCode()">Export Code</button>
+        </div>
+
+        <div class="code-container">
+            <textarea id="code" placeholder="Generated Arduino code will appear here..." readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        const matrix = document.getElementById('matrix');
+        const codeBox = document.getElementById('code');
+        const ledState = Array(64).fill(false);
+        const turnedOnOrder = [];
+        let isDragging = false;
+        let dragMode = null;
+
+        // Create matrix
+        for (let i = 0; i < 64; i++) {
+            const led = document.createElement('div');
+            led.classList.add('led');
+            led.dataset.index = i;
+            
+            led.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                isDragging = true;
+                dragMode = !ledState[i];
+                toggleLED(i, dragMode);
+            });
+
+            led.addEventListener('mousemove', (event) => {
+                if (isDragging) {
+                    toggleLED(i, dragMode);
+                }
+            });
+
+            matrix.appendChild(led);
+        }
+
+        // Stop dragging
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            dragMode = null;
+        });
+
+        // Prevent default drag
+        matrix.addEventListener('dragstart', (e) => e.preventDefault());
+
+        function toggleLED(index, state = null) {
+            const led = matrix.children[index];
+            const isOn = ledState[index];
+            const newState = state !== null ? state : !isOn;
+
+            ledState[index] = newState;
+            led.classList.toggle('on', newState);
+
+            const x = index % 8;
+            const y = Math.floor(index / 8);
+            const arduinoState = newState ? 'HIGH' : 'LOW';
+            const codeLine = `digitalWrite(${y * 8 + x}, ${arduinoState});\n`;
+            updateCodeBox(codeLine);
+
+            // Track the order of turned on LEDs
+            if (newState && !turnedOnOrder.includes(index)) {
+                turnedOnOrder.push(index);
+            }
+        }
+
+        function updateCodeBox(codeLine) {
+            const currentCode = codeBox.value;
+            if (!currentCode.includes(codeLine)) {
+                codeBox.value += codeLine;
+            }
+        }
+
+        function clearAll() {
+            for (let i = 0; i < ledState.length; i++) {
+                ledState[i] = false;
+                matrix.children[i].classList.remove('on');
+            }
+            codeBox.value = '';
+            turnedOnOrder.length = 0;
+        }
+
+        function runSimulation() {
+            const code = codeBox.value;
+            const lines = code.split('\n');
+            let delay = 100;
+            let pointer = 0;
+            const commands = [];
+
+            lines.forEach(line => {
+                const matchDigital = line.trim().match(/digitalWrite\((\d+),\s*(HIGH|LOW)\)/);
+                const matchDelay = line.trim().match(/delay\((\d+)\)/);
+
+                if (matchDigital) {
+                    const ledIndex = parseInt(matchDigital[1], 10);
+                    const state = matchDigital[2] === 'HIGH';
+                    const x = ledIndex % 8;
+                    const y = Math.floor(ledIndex / 8);
+                    commands.push({ x, y, state });
+                }
+
+                if (matchDelay) {
+                    delay = parseInt(matchDelay[1], 10);
+                    commands.push({ delay });
+                }
+            });
+
+            function executeCommands() {
+                if (pointer >= commands.length) return;
+                const cmd = commands[pointer];
+
+                if (cmd.delay) {
+                    setTimeout(() => {
+                        pointer++;
+                        executeCommands();
+                    }, cmd.delay);
+                } else {
+                    setLED(cmd.x, cmd.y, cmd.state);
+                    pointer++;
+                    executeCommands();
+                }
+            }
+
+            executeCommands();
+        }
+
+        function setLED(x, y, state) {
+            const index = y * 8 + x;
+            const led = matrix.children[index];
+            if (led) {
+                led.classList.toggle('on', state);
+            }
+        }
+
+        function downloadCode() {
+            const addDelay = document.getElementById('addDelayCheckbox').checked;
+            const delayMs = document.getElementById('delayInput').value;
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            let printOutput = '';
+
+            let sortedLeds = [];
+            if (orderType === 'order') {
+                // Use the order LEDs were turned on
+                sortedLeds = turnedOnOrder.filter(index => ledState[index]);
+            } else {
+                // Sort by matrix position (row by row)
+                sortedLeds = ledState.reduce((acc, isOn, index) => {
+                    if (isOn) acc.push(index);
+                    return acc;
+                }, []);
+            }
+
+            sortedLeds.forEach((index, i) => {
+                const x = index % 8;
+                const y = Math.floor(index / 8);
+                printOutput += `digitalWrite(${y * 8 + x}, HIGH);\n`;
+                
+                // Add delay between LEDs if checkbox is checked
+                if (addDelay && i < sortedLeds.length - 1) {
+                    printOutput += `delay(${delayMs});\n`;
+                }
+            });
+
+            const blob = new Blob([printOutput], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'arduino_matrix_code.txt';
+            link.click();
+        }
+    </script>
+</body>
+</html>
