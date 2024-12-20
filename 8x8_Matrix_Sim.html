@@ -14,6 +14,10 @@
             --highlight-color: #ff6b6b;
             --led-off: #333;
             --led-on: #ff6b6b;
+            --switch-bg: #1e1e1e;
+            --switch-handle-bg: #4a90e2;
+            --switch-text-active: #ffffff;
+            --switch-text-inactive: rgba(255, 255, 255, 0.5);
         }
 
         * {
@@ -86,10 +90,11 @@
         }
 
         .controls {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-bottom: 1rem;
+            width: 100%;
         }
 
         .btn {
@@ -103,6 +108,8 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
         }
 
         .btn:hover {
@@ -115,20 +122,90 @@
         }
 
         .export-config {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin-bottom: 1rem;
             background-color: var(--bg-secondary);
-            padding: 1rem;
+            padding: 1.5rem;
             border-radius: 8px;
         }
 
         .export-config label {
+            color: var(--text-primary);
+        }
+
+        .export-config input[type="number"] {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--text-secondary);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100px;
+        }
+
+        .switch-container {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 200px;
+            height: 40px;
+            background-color: var(--switch-bg);
+            border-radius: 20px;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .switch-handle {
+            position: absolute;
+            width: 96px;
+            height: 32px;
+            background-color: var(--switch-handle-bg);
+            border-radius: 16px;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--switch-text-active);
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .switch[data-state="ablauf"] .switch-handle {
+            transform: translateX(96px);
+        }
+
+        .switch-label {
+            position: absolute;
+            width: 96px;
+            text-align: center;
+            line-height: 32px;
+            transition: color 0.3s ease;
+            z-index: 1;
+        }
+
+        .switch-label.left {
+            left: 4px;
+            color: var(--switch-text-inactive);
+        }
+
+        .switch-label.right {
+            right: 4px;
+            color: var(--switch-text-inactive);
+        }
+
+        .switch[data-state="bild"] .switch-label.left {
+            color: var(--switch-text-active);
+        }
+
+        .switch[data-state="ablauf"] .switch-label.right {
+            color: var(--switch-text-active);
         }
 
         .code-container {
@@ -152,13 +229,28 @@
                 padding: 1rem;
             }
 
-            .controls, .export-config {
-                flex-direction: column;
-                align-items: center;
+            .export-config {
+                grid-template-columns: 1fr;
             }
 
-            .btn {
-                width: 100%;
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .switch {
+                width: 160px;
+            }
+
+            .switch-handle {
+                width: 76px;
+            }
+
+            .switch[data-state="ablauf"] .switch-handle {
+                transform: translateX(76px);
+            }
+
+            .switch-label {
+                width: 76px;
             }
         }
     </style>
@@ -178,14 +270,13 @@
                 Delay (ms): 
                 <input type="number" id="delayInput" value="100" min="0" max="5000">
             </label>
-            <label>
-                <input type="radio" name="orderType" value="order" checked>
-                Order In Which LED Turned On
-            </label>
-            <label>
-                <input type="radio" name="orderType" value="position">
-                Position on Matrix
-            </label>
+            <div class="switch-container">
+                <div class="switch" id="modeSwitch" data-state="bild">
+                    <div class="switch-handle">BILD</div>
+                    <span class="switch-label left">BILD</span>
+                    <span class="switch-label right">ABLAUF</span>
+                </div>
+            </div>
         </div>
         
         <div class="controls">
@@ -202,12 +293,19 @@
     <script>
         const matrix = document.getElementById('matrix');
         const codeBox = document.getElementById('code');
+        const modeSwitch = document.getElementById('modeSwitch');
         const ledState = Array(64).fill(false);
         const turnedOnOrder = [];
         let isDragging = false;
         let dragMode = null;
 
-        // Create matrix
+        modeSwitch.addEventListener('click', () => {
+            const currentState = modeSwitch.dataset.state;
+            const newState = currentState === 'bild' ? 'ablauf' : 'bild';
+            modeSwitch.dataset.state = newState;
+            modeSwitch.querySelector('.switch-handle').textContent = newState.toUpperCase();
+        });
+
         for (let i = 0; i < 64; i++) {
             const led = document.createElement('div');
             led.classList.add('led');
@@ -229,13 +327,11 @@
             matrix.appendChild(led);
         }
 
-        // Stop dragging
         document.addEventListener('mouseup', () => {
             isDragging = false;
             dragMode = null;
         });
 
-        // Prevent default drag
         matrix.addEventListener('dragstart', (e) => e.preventDefault());
 
         function toggleLED(index, state = null) {
@@ -248,13 +344,14 @@
 
             const x = index % 8;
             const y = Math.floor(index / 8);
-            const arduinoState = newState ? 'HIGH' : 'LOW';
-            const codeLine = `digitalWrite(${y * 8 + x}, ${arduinoState});\n`;
+            const codeLine = `matrix.drawPixel(${x}, ${y}, ${newState ? '1' : '0'});\n`;
             updateCodeBox(codeLine);
 
-            // Track the order of turned on LEDs
             if (newState && !turnedOnOrder.includes(index)) {
                 turnedOnOrder.push(index);
+            } else if (!newState) {
+                const idx = turnedOnOrder.indexOf(index);
+                if (idx > -1) turnedOnOrder.splice(idx, 1);
             }
         }
 
@@ -282,14 +379,13 @@
             const commands = [];
 
             lines.forEach(line => {
-                const matchDigital = line.trim().match(/digitalWrite\((\d+),\s*(HIGH|LOW)\)/);
+                const matchPixel = line.trim().match(/matrix\.drawPixel\((\d+),\s*(\d+),\s*(\d+)\)/);
                 const matchDelay = line.trim().match(/delay\((\d+)\)/);
 
-                if (matchDigital) {
-                    const ledIndex = parseInt(matchDigital[1], 10);
-                    const state = matchDigital[2] === 'HIGH';
-                    const x = ledIndex % 8;
-                    const y = Math.floor(ledIndex / 8);
+                if (matchPixel) {
+                    const x = parseInt(matchPixel[1], 10);
+                    const y = parseInt(matchPixel[2], 10);
+                    const state = matchPixel[3] === '1';
                     commands.push({ x, y, state });
                 }
 
@@ -329,15 +425,13 @@
         function downloadCode() {
             const addDelay = document.getElementById('addDelayCheckbox').checked;
             const delayMs = document.getElementById('delayInput').value;
-            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            const orderType = modeSwitch.dataset.state;
             let printOutput = '';
 
             let sortedLeds = [];
-            if (orderType === 'order') {
-                // Use the order LEDs were turned on
+            if (orderType === 'ablauf') {
                 sortedLeds = turnedOnOrder.filter(index => ledState[index]);
             } else {
-                // Sort by matrix position (row by row)
                 sortedLeds = ledState.reduce((acc, isOn, index) => {
                     if (isOn) acc.push(index);
                     return acc;
@@ -347,9 +441,9 @@
             sortedLeds.forEach((index, i) => {
                 const x = index % 8;
                 const y = Math.floor(index / 8);
-                printOutput += `digitalWrite(${y * 8 + x}, HIGH);\n`;
+                printOutput += `matrix.drawPixel(${x}, ${y}, 1);\n`;
+                printOutput += `matrix.writeDisplay();\n`;
                 
-                // Add delay between LEDs if checkbox is checked
                 if (addDelay && i < sortedLeds.length - 1) {
                     printOutput += `delay(${delayMs});\n`;
                 }
@@ -358,8 +452,9 @@
             const blob = new Blob([printOutput], { type: 'text/plain' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'arduino_matrix_code.txt';
+            link.download = 'Output.txt';
             link.click();
+            clearAll();
         }
     </script>
 </body>
