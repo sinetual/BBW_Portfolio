@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Simulator</title>
+  <style>
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --success: #34d399;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-color);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.top-nav {
+  background: var(--card-bg);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo i {
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.card-header i {
+  color: var(--primary);
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+  background: var(--bg-color);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.query-editor {
+  margin-bottom: 1.5rem;
+}
+
+.query-result {
+  background: var(--bg-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.result-container {
+  overflow-x: auto;
+}
+
+.commit-log {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.commit-entry {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s ease;
+}
+
+.commit-entry:hover {
+  background: var(--bg-color);
+}
+
+.commit-entry.success {
+  border-left: 3px solid var(--success);
+}
+
+.commit-entry.error {
+  border-left: 3px solid var(--error);
+}
+
+.commit-time {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.commit-query {
+  font-family: monospace;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.05);
+  border-radius: 0.25rem;
+}
+
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.result-table th,
+.result-table td {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.result-table th {
+  background: var(--bg-color);
+  font-weight: 500;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification.success {
+  background: var(--success);
+  color: white;
+}
+
+.notification.error {
+  background: var(--error);
+  color: white;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+  
+  .logo h1 {
+    font-size: 1.25rem;
+  }
+}
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="logo">
+      <i class="fas fa-database"></i>
+      <h1>SQL Simulator</h1>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="left-panel">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-table"></i>
+          <h2>Create Table</h2>
+        </div>
+        <form id="createTableForm">
+          <div class="input-group">
+            <label>Table Name</label>
+            <input type="text" id="tableName" placeholder="e.g., users" required />
+          </div>
+          <div class="input-group">
+            <label>Columns Definition</label>
+            <textarea id="columns" placeholder="id INT PRIMARY KEY,&#10;name TEXT NOT NULL,&#10;email VARCHAR(255)" required></textarea>
+          </div>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-plus"></i> Create Table
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-list"></i>
+          <h2>Tables Overview</h2>
+        </div>
+        <div id="tables" class="tables-grid"></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-terminal"></i>
+          <h2>SQL Query Editor</h2>
+        </div>
+        <div class="query-editor">
+          <textarea id="query" placeholder="SELECT * FROM users;" required></textarea>
+          <button id="runQuery" class="btn-primary">
+            <i class="fas fa-play"></i> Execute Query
+          </button>
+        </div>
+        <div class="query-result">
+          <h3>Results</h3>
+          <div id="queryResult" class="result-container"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-history"></i>
+          <h2>Query History</h2>
+        </div>
+        <div id="commitLog" class="commit-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const database = {};
+const commitLog = [];
+
+document.getElementById('createTableForm').addEventListener('submit', event => {
+ event.preventDefault();
+ const tableName = document.getElementById('tableName').value.trim().toLowerCase();
+ const columnsInput = document.getElementById('columns').value.trim();
+
+ if (!tableName || !columnsInput) {
+   showNotification('Please fill all fields', 'error');
+   return;
+ }
+
+ if (database[tableName]) {
+   showNotification('Table already exists!', 'error');
+   return;
+ }
+
+ try {
+   const columnDefs = parseColumns(columnsInput);
+   database[tableName] = {
+     columns: columnDefs,
+     rows: []
+   };
+
+   showNotification(`Table ${tableName} created successfully!`, 'success');
+   updateTables();
+   document.getElementById('createTableForm').reset();
+   logCommit(`CREATE TABLE ${tableName} (${columnsInput})`, 'success');
+ } catch (error) {
+   showNotification(error.message, 'error');
+   logCommit(`Failed to create table ${tableName}`, 'error', error.message);
+ }
+});
+
+function parseColumns(columnsStr) {
+ return columnsStr.split(',').map(col => {
+   const parts = col.trim().split(/\s+/);
+   if (parts.length < 2) {
+     throw new Error('Each column must have a name and type');
+   }
+   return {
+     name: parts[0].toLowerCase(),
+     type: parts.slice(1).join(' ').toUpperCase()
+   };
+ });
+}
+
+function updateTables() {
+ const tablesDiv = document.getElementById('tables');
+ tablesDiv.innerHTML = Object.entries(database).map(([name, table]) => `
+   <div class="table">
+     <div class="table-header">
+       <h3>${name}</h3>
+       <span class="table-stats">${table.rows.length} rows</span>
+     </div>
+     <div class="table-columns">
+       ${table.columns.map(col => `
+         <span class="column-tag">
+           ${col.name} <small>${col.type}</small>
+         </span>
+       `).join('')}
+     </div>
+   </div>
+ `).join('');
+}
+
+document.getElementById('runQuery').addEventListener('click', () => {
+ const queryArea = document.getElementById('query');
+ const query = queryArea.value.trim();
+ 
+ if (!query) {
+   showNotification('Please enter a query', 'error');
+   return;
+ }
+
+ try {
+   let result;
+   if (/^SELECT/i.test(query)) result = handleSelect(query);
+   else if (/^INSERT/i.test(query)) result = handleInsert(query);
+   else if (/^UPDATE/i.test(query)) result = handleUpdate(query);
+   else if (/^DELETE/i.test(query)) result = handleDelete(query);
+   else throw new Error('Unsupported SQL command');
+
+   displayQueryResult(result);
+   logCommit(query, 'success');
+   showNotification('Query executed successfully!', 'success');
+ } catch (error) {
+   showNotification(error.message, 'error');
+   document.getElementById('queryResult').innerHTML = 
+     `<div class="error-message">${error.message}</div>`;
+   logCommit(query, 'error', error.message);
+ }
+});
+
+function handleSelect(query) {
+ const match = query.match(/SELECT (.+) FROM (\w+)(?:\s+WHERE\s+(.+))?/i);
+ if (!match) throw new Error('Invalid SELECT query');
+
+ const [, columns, tableName, whereClause] = match;
+ const table = database[tableName.toLowerCase()];
+ if (!table) throw new Error(`Table ${tableName} doesn't exist`);
+
+ let selectedColumns = columns.trim() === '*' 
+   ? table.columns.map(col => col.name)
+   : columns.split(',').map(col => col.trim().toLowerCase());
+
+ let rows = table.rows;
+ if (whereClause) {
+   rows = rows.filter(row => {
+     try {
+       return eval(whereClause.replace(/(\w+)/g, (match) => {
+         const value = row[match.toLowerCase()];
+         return typeof value === 'string' ? `'${value}'` : value;
+       }));
+     } catch (e) {
+       throw new Error('Invalid WHERE clause');
+     }
+   });
+ }
+
+ return rows.map(row => {
+   const selectedRow = {};
+   selectedColumns.forEach(col => {
+     selectedRow[col] = row[col] ?? 'NULL';
+   });
+   return selectedRow;
+ });
+}
+
+function handleInsert(query) {
+ const match = query.match(/INSERT INTO (\w+)\s*\((.+?)\)\s*VALUES\s*\((.+?)\)/i);
+ if (!match) throw new Error('Invalid INSERT query');
+
+ const [, tableName, columns, values] = match;
+ const table = database[tableName.toLowerCase()];
+ if (!table) throw new Error(`Table ${tableName} doesn't exist`);
+
+ const columnNames = columns.split(',').map(col => col.trim().toLowerCase());
+ const valueArray = values.split(',').map(val => {
+   val = val.trim();
+   return val.startsWith("'") || val.startsWith('"') ? val.slice(1, -1) : Number(val);
+ });
+
+ if (columnNames.length !== valueArray.length) {
+   throw new Error('Column count doesn\'t match value count');
+ }
+
+ const newRow = {};
+ columnNames.forEach((col, i) => {
+   newRow[col] = valueArray[i];
+ });
+
+ table.rows.push(newRow);
+ updateTables();
+ return `Inserted 1 row into ${tableName}`;
+}
+
+function handleUpdate(query) {
+ const match = query.match(/UPDATE (\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?/i);
+ if (!match) throw new Error('Invalid UPDATE query');
+
+ const [, tableName, setClause, whereClause] = match;
+ const table = database[tableName.toLowerCase()];
+ if (!table) throw new Error(`Table ${tableName} doesn't exist`);
+
+ const updates = setClause.split(',').map(update => {
+   const [col, val] = update.trim().split('=').map(s => s.trim());
+   return [col.toLowerCase(), val.startsWith("'") || val.startsWith('"') ? val.slice(1, -1) : Number(val)];
+ });
+
+ let updateCount = 0;
+ table.rows.forEach(row => {
+   if (!whereClause || eval(whereClause.replace(/(\w+)/g, (match) => {
+     const value = row[match.toLowerCase()];
+     return typeof value === 'string' ? `'${value}'` : value;
+   }))) {
+     updates.forEach(([col, val]) => row[col] = val);
+     updateCount++;
+   }
+ });
+
+ updateTables();
+ return `Updated ${updateCount} row(s) in ${tableName}`;
+}
+
+function handleDelete(query) {
+ const match = query.match(/DELETE FROM (\w+)(?:\s+WHERE\s+(.+))?/i);
+ if (!match) throw new Error('Invalid DELETE query');
+
+ const [, tableName, whereClause] = match;
+ const table = database[tableName.toLowerCase()];
+ if (!table) throw new Error(`Table ${tableName} doesn't exist`);
+
+ const initialCount = table.rows.length;
+ if (!whereClause) {
+   table.rows = [];
+   return `Deleted ${initialCount} row(s) from ${tableName}`;
+ }
+
+ table.rows = table.rows.filter(row => !eval(whereClause.replace(/(\w+)/g, (match) => {
+   const value = row[match.toLowerCase()];
+   return typeof value === 'string' ? `'${value}'` : value;
+ })));
+
+ const deletedCount = initialCount - table.rows.length;
+ updateTables();
+ return `Deleted ${deletedCount} row(s) from ${tableName}`;
+}
+
+function displayQueryResult(result) {
+ const resultDiv = document.getElementById('queryResult');
+ 
+ if (Array.isArray(result)) {
+   if (result.length === 0) {
+     resultDiv.textContent = 'No results found';
+     return;
+   }
+   
+   const table = document.createElement('table');
+   table.className = 'result-table';
+   
+   const headers = Object.keys(result[0]);
+   table.innerHTML = `
+     <thead>
+       <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+     </thead>
+     <tbody>
+       ${result.map(row => `
+         <tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>
+       `).join('')}
+     </tbody>
+   `;
+   
+   resultDiv.innerHTML = '';
+   resultDiv.appendChild(table);
+ } else {
+   resultDiv.textContent = result;
+ }
+}
+
+function logCommit(query, status, message = '') {
+ const entry = {
+   timestamp: new Date().toISOString(),
+   query,
+   status,
+   message
+ };
+ 
+ commitLog.unshift(entry);
+ updateCommitLog();
+}
+
+function updateCommitLog() {
+ document.getElementById('commitLog').innerHTML = commitLog.map(entry => `
+   <div class="commit-entry ${entry.status}">
+     <div class="commit-time">${new Date(entry.timestamp).toLocaleTimeString()}</div>
+     <div class="commit-query">${entry.query}</div>
+     ${entry.message ? `<div class="commit-message">${entry.message}</div>` : ''}
+   </div>
+ `).join('');
+}
+
+function showNotification(message, type) {
+ const notification = document.createElement('div');
+ notification.className = `notification ${type}`;
+ notification.textContent = message;
+ 
+ document.body.appendChild(notification);
+ setTimeout(() => notification.classList.add('show'), 10);
+ setTimeout(() => {
+   notification.classList.remove('show');
+   setTimeout(() => notification.remove(), 300);
+ }, 3000);
+}
+  </script>
+</body>
+</html>
